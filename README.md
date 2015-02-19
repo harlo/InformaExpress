@@ -1,6 +1,6 @@
 ## InformaExpress
 
-This package bootstraps the Informa build of Unveillance (both [front][c_f] and [back][c_a] ends) onto a Docker container.  It takes about an hour to build, because of dependencies, but will take you from start to finish.
+This package bootstraps the Informa build of Unveillance (both [front][c_f] and [back][c_a] ends) onto a Docker container.  It takes about 20 minutes to build, because of dependencies, but will take you from start to finish.
 
 ### Install
 

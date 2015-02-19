@@ -43,7 +43,7 @@ def init_d(with_config):
 		'gpg_dir' : "/home/%s/.gnupg" % config['USER']
 	}
 
-	ANNEX_DIRECTIVES = ['org_name', 'gpg_pwd', 'repo', 'org_details', 'gpg_priv_key']
+	ANNEX_DIRECTIVES = ['org_name', 'forms_root', 'gpg_pwd', 'repo', 'org_details', 'gpg_priv_key']
 	for directive in ANNEX_DIRECTIVES:
 		if directive in config.keys():
 			annex_config[directive] = config[directive]

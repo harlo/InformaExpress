@@ -14,7 +14,7 @@ function resolve_git {
 	rm .git
 	git init
 
-	git remote add $2
+	git remote add origin $2
 
 	cat > $1/.git/config <<'_EOF'
 [branch "master"]
@@ -65,11 +65,11 @@ _EOF
 git config --global user.name "informa"
 git config --global user.email "informa@j3m.info"
 
-declare -a U_MODS=("InformaFrontend", "InformaAnnex")
+declare -a U_MODS=("InformaFrontend" "InformaAnnex")
 for U_MOD in "${U_MODS[@]}"; do
 	resolve_git ~/$U_MOD "git@github.com:harlo/$U_MOD.git"
 done
 
 cd ~/InformaAnnex && ./setup.sh /home/informa/unveillance.informa.annex.json
 source ~/.bash_profile
-cd ~/InformaAnnex && ./setup.sh /home/informa/unveillance.informa.frontend.json
+cd ~/InformaFrontend && ./setup.sh /home/informa/unveillance.informa.frontend.json
