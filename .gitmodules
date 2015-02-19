@@ -1,0 +1,9 @@
+[submodule "dutils"]
+	path = dutils
+	url = git@github.com:harlo/dutils.git
+[submodule "src/InformaFrontend"]
+	path = src/InformaFrontend
+	url = git@github.com:harlo/InformaFrontend.git
+[submodule "src/InformaAnnex"]
+	path = src/InformaAnnex
+	url = git@github.com:harlo/InformaAnnex.git
