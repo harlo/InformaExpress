@@ -20,10 +20,7 @@ Once set up, you can hook in a number of desktop clients on your network.  This 
 
 1.	Modify that config file to include a few new directives:
 
-	{
-		"server_force_ssh" : true,
-		"api.port" : 8891
-	}
+	`{ "server_force_ssh" : true, "api.port" : 8891 }`
 
 	Actually, `api.port` can be anything that is not 8888, 8889, or 8890; those ports are already in use.
 
@@ -38,7 +35,7 @@ Once set up, you can hook in a number of desktop clients on your network.  This 
 
 1.	From the engine, run the following:
 
-	cd ~/InformaAnnex/lib/Annex && python import_key.py /path/to/that/key.pub
+	`cd ~/InformaAnnex/lib/Annex && python import_key.py /path/to/that/key.pub`
 
 	Once you have a key installed, you can access the engine via a local Frontend.
 
