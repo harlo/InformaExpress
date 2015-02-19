@@ -79,7 +79,7 @@ def init_d(with_config):
 def build_d():
 	res, config = append_to_config({
 		'DEFAULT_PORTS' : " ".join([str(p) for p in DEFAULT_PORTS]),
-		'COMMIT_TO' : "compass_express"
+		'COMMIT_TO' : "informa_express"
 	}, return_config=True)
 	
 	if not res:
