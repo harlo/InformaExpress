@@ -27,7 +27,7 @@ When the engine is running, you can add a github key to the box via SSH.  Once r
 
 ...where you substitute the port for whatever you're shown in the mappings when you start the engine.  Boot2Docker users will not use localhost, but the IP address assigned by Docker.  (This is also quite visible when you launch.)
 
-You can then pull from the CompassAnnex or CompassFrontend packages on Github as you normally would, whenever you're "in the box" with SSH.  To start a shell session, simply
+You can then pull from the InformaAnnex or InformaFrontend packages on Github as you normally would, whenever you're "in the box" with SSH.  To start a shell session, simply
 
 	./run.sh shell
 
