@@ -35,10 +35,13 @@ Once set up, you can hook in a number of desktop clients on your network.  This 
 1.	`./setup.sh /path/to/config/you/made.json`
 1.	Now, push your newly-generated key to the Engine.  The simplest way to do so is to copy-paste its contents into a file on the engine, using `vim` for example.
 
+
 1.	From the engine, run the following:
 
-	`cd ~/InformaAnnex/lib/Annex`
+	cd ~/InformaAnnex/lib/Annex && python import_key.py /path/to/that/key.pub
 
-	`python import_key.py /path/to/that/new/key.pub`
+	Once you have a key installed, you can access the engine via a local Frontend.
 
-1.	You can now exit out of the shell.  Be sure to save state 
+1.	You can now exit out of the shell.  Be sure to save state.
+
+[c_f]: http://github.com/harlo/InformaFrontend
