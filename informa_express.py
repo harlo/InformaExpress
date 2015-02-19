@@ -12,12 +12,12 @@ DEFAULT_PORTS = [22, API_PORT, MESSAGE_PORT, FRONTEND_PORT]
 
 def init_d(with_config):
 	conf_keys = [
-		DUtilsKeyDefaults['USER'],
 		DUtilsKeyDefaults['USER_PWD'],
 		DUtilsKeyDefaults['IMAGE_NAME']
 	]
 
 	config = build_config(conf_keys, with_config)
+	config['USER'] = "informa"
 
 	from dutils.dutils import get_docker_exe, get_docker_ip
 
@@ -39,11 +39,16 @@ def init_d(with_config):
 		'uv_server_host' : config['DOCKER_IP'],
 		'uv_uuid' : config['IMAGE_NAME'],
 		'uv_log_cron' : 3,
-		'ssh_root' : "/home/%s/.ssh" % config['USER']
+		'ssh_root' : "/home/%s/.ssh" % config['USER'],
+		'gpg_dir' : "/home/%s/.gnupg" % config['USER']
 	}
 
+	ANNEX_DIRECTIVES = ['org_name', 'gpg_pwd', 'repo', 'org_details', 'gpg_priv_key']
+	for directive in ANNEX_DIRECTIVES:
+		if directive in config.keys():
+			annex_config[directive] = config[directive]
+
 	frontend_config = {
-		'documentcloud_no_ask' : True,
 		'api.port' : FRONTEND_PORT,
 		'gdrive_auth_no_ask' : True,
 		'server_host' : "localhost",
@@ -53,8 +58,14 @@ def init_d(with_config):
 		'server_message_port' : MESSAGE_PORT,
 		'annex_remote' : annex_config['annex_dir'],
 		'server_use_ssl' : False,
-		'uv_uuid' : annex_config['uv_uuid']
+		'uv_uuid' : annex_config['uv_uuid'],
+		'forms_root' : "/home/%s/forms" % config['USER']
 	}
+
+	FRONEND_DIRECTIVES = ['web_home_mime_types']
+	for directive in FRONEND_DIRECTIVES:
+		if directive in config.keys():
+			frontend_config[directive] = config[directive]
 
 	with open(os.path.join(BASE_DIR, "src", "unveillance.informa.annex.json"), 'wb+') as A:
 		A.write(json.dumps(annex_config))

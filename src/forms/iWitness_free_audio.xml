@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<h:html xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:kobo="http://www.kobotoolbox.org/xmlns"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/1999/xhtml" >
+    <h:head>
+        <h:title ref="jr:itext('iWitness_free_audio')" >iWitness Free Audio Annotation</h:title>
+        <model>
+            <instance>
+                <iWitness_free_audio id="iWitness_free_audio" >
+                    <iW_free_audio />
+                </iWitness_free_audio>
+            </instance>
+			
+            <bind
+                id="iW_free_audio"
+                nodeset="/iWitness_free_audio/iW_free_audio"
+                type="binary" />
+            <itext>
+                <translation lang="English" >
+               		<text id="iWitness_free_audio" >
+                    	<value>iWitness Free Audio Annotation</value>
+                	</text>
+
+                	<text id="iW_free_audio" >
+                    	<value>Add an audio note...</value>
+                	</text>
+            	</translation>
+            </itext>
+
+            
+        </model>
+    </h:head>
+
+    <h:body>        
+        <upload
+            bind="iW_free_audio"
+            mediatype="audio/*" >
+            <label ref="jr:itext('iW_free_audio')" />
+        </upload>
+    </h:body>
+</h:html>

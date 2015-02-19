@@ -10,7 +10,7 @@ function resolve_git {
 		return
 	fi
 
-	cd $1 && `pwd`
+	cd $1 && pwd
 	rm .git
 	git init
 
@@ -62,16 +62,14 @@ _EOF
 	fi
 }
 
-git config --global user.name "compass"
-git config --global user.email "compass@j3m.info"
+git config --global user.name "informa"
+git config --global user.email "informa@j3m.info"
 
-cd ~/CompassAnnex && ./setup.sh /home/compass/unveillance.compass.annex.json
-source ~/.bash_profile
-cd ~/CompassFrontend && ./setup.sh /home/compass/unveillance.compass.frontend.json
-
-declare -a U_MODS=("CompassFrontend", "CompassAnnex")
+declare -a U_MODS=("InformaFrontend", "InformaAnnex")
 for U_MOD in "${U_MODS[@]}"; do
 	resolve_git ~/$U_MOD "git@github.com:harlo/$U_MOD.git"
 done
 
-
+cd ~/InformaAnnex && ./setup.sh /home/informa/unveillance.informa.annex.json
+source ~/.bash_profile
+cd ~/InformaAnnex && ./setup.sh /home/informa/unveillance.informa.frontend.json

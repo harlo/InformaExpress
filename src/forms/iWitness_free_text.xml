@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<h:html xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:kobo="http://www.kobotoolbox.org/xmlns"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/1999/xhtml" >
+    <h:head>
+        <h:title ref="jr:itext('iWitness_free_text')" >iWitness Free Text Annotations</h:title>
+        <model>
+            <instance>
+                <iWitness_free_text id="iWitness_free_text" >
+                    <iW_free_text />
+                </iWitness_free_text>
+            </instance>
+			<bind
+				id="iW_free_text"
+				nodeset="/iWitness_free_text/iW_free_text"
+                type="xsd:string" />            
+            <itext>
+                <translation lang="English" >
+               		<text id="iWitness_free_text" >
+                    	<value>iWitness Free Text Annotations</value>
+                	</text>
+
+                	<text id="iW_free_text" >
+                    	<value>Add a note...</value>
+                	</text>
+                	<text id="iW_free_text-hint">
+            			<value>Add a note...</value>
+          			</text>
+            	</translation>
+            </itext>
+
+            
+        </model>
+    </h:head>
+
+    <h:body>
+        <input bind="iW_free_text" >
+            <label ref="jr:itext('iW_free_text')" />
+            <hint ref="jr:itext('iW_free_text-hint')"/>
+        </input>
+    </h:body>
+</h:html>

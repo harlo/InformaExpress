@@ -2,6 +2,9 @@
 *.pyc
 *.json
 *.sh
+*.asc
+*.pem
+
 Dockerfile
 venv/
 
