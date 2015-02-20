@@ -1,19 +1,24 @@
 import os, json
 from sys import argv, exit
 
-from dutils.conf import DUtilsKey, DUtilsKeyDefaults, build_config, BASE_DIR, append_to_config, save_config
+from dutils.conf import DUtilsKey, DUtilsKeyDefaults, build_config, BASE_DIR, append_to_config, save_config, __load_config
 from dutils.dutils import build_routine, build_dockerfile
 
 API_PORT = 8889
 MESSAGE_PORT = 8890
 FRONTEND_PORT = 8888
 
-DEFAULT_PORTS = [22, API_PORT, MESSAGE_PORT, FRONTEND_PORT]
+DEFAULT_PORTS = [22]
 
 def init_d(with_config):
+	port_to_int = lambda p : int(p.strip())
+
 	conf_keys = [
 		DUtilsKeyDefaults['USER_PWD'],
-		DUtilsKeyDefaults['IMAGE_NAME']
+		DUtilsKeyDefaults['IMAGE_NAME'],
+		DUtilsKey("API_PORT", "Annex api port", API_PORT, str(API_PORT), port_to_int),
+		DUtilsKey("MESSAGE_PORT", "Annex messaging port", API_PORT + 1, str(API_PORT + 1), port_to_int)
+		DUtilsKey("FRONTEND_PORT", "Frontend port", FRONTEND_PORT, str(FRONTEND_PORT), port_to_int)
 	]
 
 	config = build_config(conf_keys, with_config)
@@ -49,13 +54,13 @@ def init_d(with_config):
 			annex_config[directive] = config[directive]
 
 	frontend_config = {
-		'api.port' : FRONTEND_PORT,
+		'api.port' : config['FRONTEND_PORT'],
 		'gdrive_auth_no_ask' : True,
 		'server_host' : "localhost",
 		'server_force_ssh' : False,
 		'annex_local' : "/home/%s/unveillance_local" % config['USER'],
-		'server_port' : API_PORT,
-		'server_message_port' : MESSAGE_PORT,
+		'server_port' : config['API_PORT'],
+		'server_message_port' : config['MESSAGE_PORT'],
 		'annex_remote' : annex_config['annex_dir'],
 		'server_use_ssl' : False,
 		'uv_uuid' : annex_config['uv_uuid'],
@@ -77,20 +82,31 @@ def init_d(with_config):
 	return build_dockerfile("Dockerfile.init", config) and generate_init_routine(config)
 
 def build_d():
-	res, config = append_to_config({
-		'DEFAULT_PORTS' : " ".join([str(p) for p in DEFAULT_PORTS]),
-		'COMMIT_TO' : "informa_express"
-	}, return_config=True)
+	res, config = append_to_config({'COMMIT_TO' : "informa_express"}, return_config=True)
 	
+	if not res:
+		return False
+
+	for p in ["API_PORT", "MESSAGE_PORT", "FRONTEND_PORT"]:
+		DEFAULT_PORTS.append(config[p])
+
+	res, config = append_to_config({
+		'DEFAULT_PORTS' : " ".join([str(p) for p in DEFAULT_PORTS])
+	}, return_config=True)
+
 	if not res:
 		return False
 
 	from dutils.dutils import generate_build_routine
 	return (build_dockerfile("Dockerfile.build", config) and generate_build_routine(config))
 	
-def commit_d():	
-	res, config = append_to_config({'PUBLISH_PORTS' : [API_PORT, FRONTEND_PORT, MESSAGE_PORT]},
-		return_config=True)
+def commit_d():
+	config = __load_config(os.path.join(BASE_DIR, "config.json"))
+	res, config = append_to_config({'PUBLISH_PORTS' : [
+		config['API_PORT'], 
+		config['FRONTEND_PORT'], 
+		config['MESSAGE_PORT']
+	]}, return_config=True)
 
 	if not res:
 		return False
@@ -99,7 +115,6 @@ def commit_d():
 	return (generate_run_routine(config) and generate_shutdown_routine(config))
 
 def update_d():
-	from dutils.conf import __load_config
 	return build_dockerfile("Dockerfile.update", __load_config(os.path.join(BASE_DIR, "config.json")))
 
 if __name__ == "__main__":
