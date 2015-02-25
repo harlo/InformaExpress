@@ -4,6 +4,7 @@
 *.sh
 *.asc
 *.pem
+*.xml
 
 Dockerfile
 venv/

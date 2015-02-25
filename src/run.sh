@@ -1,6 +1,6 @@
 #! /bin/bash
 
-sudo start service ssh
+sudo service ssh start
 sudo cron -f &
 
 ./startup.sh
