@@ -112,21 +112,22 @@ def commit_d():
 		return False
 
 	from dutils.dutils import generate_run_routine, generate_shutdown_routine
-	return (generate_run_routine(config) and generate_shutdown_routine(config))
+	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"]) and generate_shutdown_routine(config))
 
-def update_d():
-	return build_dockerfile("Dockerfile.update", __load_config(os.path.join(BASE_DIR, "config.json")))
+def update_d(with_config):
+	return build_dockerfile("Dockerfile.update", __load_config(os.path.join(BASE_DIR, "config.json") if with_config is None else with_config))
 
 if __name__ == "__main__":
 	res = False
+	with_config = None if len(argv) == 2 else argv[2]
 
 	if argv[1] == "init":
-		res = init_d(None if len(argv) == 2 else argv[2])
+		res = init_d(with_config)
 	elif argv[1] == "build":
 		res = build_d()
 	elif argv[1] == "commit":
 		res = commit_d()
 	elif argv[1] == "update":
-		res = update_d()
+		res = update_d(with_config)
 	
 	exit(0 if res else -1)

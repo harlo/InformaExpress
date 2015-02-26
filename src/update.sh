@@ -12,7 +12,7 @@ function do_update {
 C_A=~/InformaAnnex
 C_F=~/InformaFrontend
 
-declare -a U_MODS=("$C_A" "$C_A/lib/Annex" "$C_A/lib/Annex/lib/Core" "$C_F" "$C_F/lib/Frontend" "$C_F/lib/Frontend/Core")
+declare -a U_MODS=("$C_A" "$C_A/lib/Annex" "$C_A/lib/Annex/lib/Core" "$C_F" "$C_F/lib/Frontend" "$C_F/lib/Frontend/lib/Core")
 for U_MOD in "${U_MODS[@]}"; do
 	do_update $U_MOD
 done
