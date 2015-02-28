@@ -24,20 +24,32 @@ def init_d(with_config):
 	config = build_config(conf_keys, with_config)
 	config['USER'] = "informa"
 
-	from dutils.dutils import get_docker_exe, get_docker_ip
+	from dutils.dutils import get_docker_exe, get_docker_ip, validate_private_key
 
 	docker_exe = get_docker_exe()
 	if docker_exe is None:
 		return False
 
-	save_config(config)
+	save_config(config, with_config=with_config)
+
+	WORKING_DIR = BASE_DIR if with_config is None else os.path.dirname(with_config)
+	if not validate_private_key(os.path.join(WORKING_DIR, "%s.privkey" % config['IMAGE_NAME']), with_config):
+		return False
+	
 	res, config = append_to_config({
 		'DOCKER_EXE' : docker_exe, 
 		'DOCKER_IP' : get_docker_ip()
-	}, return_config=True)
+	}, return_config=True, with_config=with_config)
+
+	print config
 
 	if not res:
 		return False
+
+	from fabric.api import settings, local
+	with settings(warn_only=True):
+		local("mkdir %s" % os.path.join(BASE_DIR, "src", ".ssh"))
+		local("cp %s %s" % (config['SSH_PUB_KEY'], os.path.join(BASE_DIR, "src", ".ssh", "authorized_keys")))
 
 	annex_config = {
 		'annex_dir' : "/home/%s/unveillance_remote" % config['USER'],
@@ -78,11 +90,13 @@ def init_d(with_config):
 	with open(os.path.join(BASE_DIR, "src", "unveillance.informa.frontend.json"), 'wb+') as F:
 		F.write(json.dumps(frontend_config))
 
-	from dutils.dutils import generate_init_routine
-	return build_dockerfile("Dockerfile.init", config) and generate_init_routine(config)
+	print "CONFIG JSONS WRITTEN."
 
-def build_d():
-	res, config = append_to_config({'COMMIT_TO' : "informa_express"}, return_config=True)
+	from dutils.dutils import generate_init_routine
+	return build_dockerfile("Dockerfile.init", config) and generate_init_routine(config, with_config=with_config)
+
+def build_d(with_config):
+	res, config = append_to_config({'COMMIT_TO' : "informa_express"}, return_config=True, with_config=with_config)
 	
 	if not res:
 		return False
@@ -92,30 +106,41 @@ def build_d():
 
 	res, config = append_to_config({
 		'DEFAULT_PORTS' : " ".join([str(p) for p in DEFAULT_PORTS])
-	}, return_config=True)
+	}, return_config=True, with_config=with_config)
 
 	if not res:
 		return False
+
+	print config
 
 	from dutils.dutils import generate_build_routine
 	return (build_dockerfile("Dockerfile.build", config) and generate_build_routine(config))
 	
-def commit_d():
-	config = __load_config(os.path.join(BASE_DIR, "config.json"))
+def commit_d(with_config):
+	try:
+		config = __load_config(with_config=with_config)
+	except Exception as e:
+		print e, type(e)
+
+	if config is None:
+		return False
+
 	res, config = append_to_config({'PUBLISH_PORTS' : [
 		config['API_PORT'], 
 		config['FRONTEND_PORT'], 
 		config['MESSAGE_PORT']
-	]}, return_config=True)
+	]}, return_config=True, with_config=with_config)
 
 	if not res:
 		return False
 
+	print config
+
 	from dutils.dutils import generate_run_routine, generate_shutdown_routine
-	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"]) and generate_shutdown_routine(config))
+	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"], with_config=with_config) and generate_shutdown_routine(config, with_config=with_config))
 
 def update_d(with_config):
-	return build_dockerfile("Dockerfile.update", __load_config(os.path.join(BASE_DIR, "config.json") if with_config is None else with_config))
+	return build_dockerfile("Dockerfile.update", __load_config(with_config=with_config))
 
 if __name__ == "__main__":
 	res = False
@@ -124,9 +149,9 @@ if __name__ == "__main__":
 	if argv[1] == "init":
 		res = init_d(with_config)
 	elif argv[1] == "build":
-		res = build_d()
+		res = build_d(with_config)
 	elif argv[1] == "commit":
-		res = commit_d()
+		res = commit_d(with_config)
 	elif argv[1] == "update":
 		res = update_d(with_config)
 	

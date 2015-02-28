@@ -10,3 +10,4 @@ Dockerfile
 venv/
 
 !src/*.sh
+src/.ssh/
