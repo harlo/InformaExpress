@@ -48,7 +48,9 @@ def init_d(with_config):
 
 	from fabric.api import settings, local
 	with settings(warn_only=True):
-		local("mkdir %s" % os.path.join(BASE_DIR, "src", ".ssh"))
+		if not os.path.exists(os.path.join(BASE_DIR, "src", ".ssh")):
+			local("mkdir %s" % os.path.join(BASE_DIR, "src", ".ssh"))
+	
 		local("cp %s %s" % (config['SSH_PUB_KEY'], os.path.join(BASE_DIR, "src", ".ssh", "authorized_keys")))
 
 	annex_config = {
@@ -114,7 +116,7 @@ def build_d(with_config):
 	print config
 
 	from dutils.dutils import generate_build_routine
-	return (build_dockerfile("Dockerfile.build", config) and generate_build_routine(config))
+	return (build_dockerfile("Dockerfile.build", config) and generate_build_routine(config, with_config=with_config))
 	
 def commit_d(with_config):
 	try:
@@ -136,8 +138,8 @@ def commit_d(with_config):
 
 	print config
 
-	from dutils.dutils import generate_run_routine, generate_shutdown_routine
-	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"], with_config=with_config) and generate_shutdown_routine(config, with_config=with_config))
+	from dutils.dutils import generate_run_routine, generate_shutdown_routine, finalize_assets
+	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"], with_config=with_config) and generate_shutdown_routine(config, with_config=with_config) and finalize_assets(with_config=with_config))
 
 def update_d(with_config):
 	return build_dockerfile("Dockerfile.update", __load_config(with_config=with_config))
@@ -155,4 +157,5 @@ if __name__ == "__main__":
 	elif argv[1] == "update":
 		res = update_d(with_config)
 	
+	print "RESULT: ", res 
 	exit(0 if res else -1)
