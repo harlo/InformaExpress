@@ -8,9 +8,11 @@ function do_update {
 		G_BRANCH=master
 	else
 		G_BRANCH=$2
+	fi
 
 	git fetch --all
 	git reset --hard origin/$G_BRANCH
+	git checkout $G_BRANCH
 	git pull origin $G_BRANCH
 }
 
