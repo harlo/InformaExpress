@@ -11,14 +11,14 @@ FRONTEND_PORT = 8888
 DEFAULT_PORTS = [22]
 
 def init_d(with_config):
-	port_to_int = lambda p : int(p.strip())
+	from dutils.conf import DUtilsTransforms as transforms
 
 	conf_keys = [
 		DUtilsKeyDefaults['USER_PWD'],
 		DUtilsKeyDefaults['IMAGE_NAME'],
-		DUtilsKey("API_PORT", "Annex api port", API_PORT, str(API_PORT), port_to_int),
-		DUtilsKey("MESSAGE_PORT", "Annex messaging port", API_PORT + 1, str(API_PORT + 1), port_to_int),
-		DUtilsKey("FRONTEND_PORT", "Frontend port", FRONTEND_PORT, str(FRONTEND_PORT), port_to_int)
+		DUtilsKey("API_PORT", "Annex api port", API_PORT, str(API_PORT), transforms['PORT_TO_INT']),
+		DUtilsKey("MESSAGE_PORT", "Annex messaging port", API_PORT + 1, str(API_PORT + 1), transforms['PORT_TO_INT']),
+		DUtilsKey("FRONTEND_PORT", "Frontend port", FRONTEND_PORT, str(FRONTEND_PORT), transforms['PORT_TO_INT'])
 	]
 
 	config = build_config(conf_keys, with_config)
