@@ -1,4 +1,4 @@
-import os, json
+import os, json, re
 from sys import argv, exit
 
 from dutils.conf import DUtilsKey, DUtilsKeyDefaults, build_config, BASE_DIR, append_to_config, save_config, __load_config
@@ -20,6 +20,11 @@ def init_d(with_config):
 		DUtilsKey("MESSAGE_PORT", "Annex messaging port", API_PORT + 1, str(API_PORT + 1), transforms['PORT_TO_INT']),
 		DUtilsKey("FRONTEND_PORT", "Frontend port", FRONTEND_PORT, str(FRONTEND_PORT), transforms['PORT_TO_INT'])
 	]
+
+	for n in ['API_PORT', 'MESSAGE_PORT', 'FRONTEND_PORT']:
+		default_port = locals()[n] - 800
+		conf_keys.append(DUtilsKey("%s_NGINX" % n, "Nginx port for %s" % n,
+			default_port, str(default_port), transforms['PORT_TO_INT']))
 
 	config = build_config(conf_keys, with_config)
 	config['USER'] = "informa"
@@ -127,26 +132,47 @@ def commit_d(with_config):
 	if config is None:
 		return False
 
-	res, config = append_to_config({'PUBLISH_PORTS' : [
-		config['API_PORT'], 
-		config['FRONTEND_PORT'], 
-		config['MESSAGE_PORT']
-	]}, return_config=True, with_config=with_config)
+	res, config = append_to_config({
+		'PUBLISH_PORTS' : [config[p] for p in ['API_PORT', 'MESSAGE_PORT', 'FRONTEND_PORT']]
+	}, return_config=True, with_config=with_config)
 
 	if not res:
 		return False
 
 	print config
 
-	from dutils.dutils import generate_run_routine, generate_shutdown_routine, finalize_assets
-	return (generate_run_routine(config, src_dirs=["InformaAnnex", "InformaFrontend"], with_config=with_config) and generate_shutdown_routine(config, with_config=with_config) and finalize_assets(with_config=with_config))
+	from dutils.dutils import generate_run_routine, generate_shutdown_routine, finalize_assets, build_nginx_config
+	
+	res, config = generate_run_routine(config, 
+		src_dirs=["InformaAnnex", "InformaFrontend"], with_config=with_config, return_config=True):
+	
+	if not res:
+		return False
+
+	WORKING_DIR = BASE_DIR if with_config is None else os.path.dirname(with_config)
+	
+	if len(argv) >= 2:
+		for a in argv[1:]:
+			
+			if re.match(r'^\-\-', a) is None:
+				conitnue
+
+			cmd = a.split("=")
+			
+			if cmd[0] == "nginx-conf" and os.path.exists(os.path.abspath(cmd[1])):
+				build_nginx_config(os.path.abspath(cmd[1]), config, dest_d=WORKING_DIR)
+				break
+
+	return generate_shutdown_routine(config, with_config=with_config) and \
+		finalize_assets(with_config=with_config))
 
 def update_d(with_config):
 	return build_dockerfile("Dockerfile.update", __load_config(with_config=with_config))
 
 if __name__ == "__main__":
 	res = False
-	with_config = None if len(argv) == 2 else argv[2]
+	with_config = None if (len(argv) >= 2 or re.match(r'^\-\-', argv[2])) \
+		else argv[2]
 
 	if argv[1] == "init":
 		res = init_d(with_config)

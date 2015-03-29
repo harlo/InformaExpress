@@ -1,6 +1,8 @@
 #! /bin/bash
 
 source ~/.bash_profile
+sudo apt-get update
+sudo apt-get upgrade
 
 function do_update {
 	cd $1
