@@ -10,7 +10,7 @@ After cloning, do the following:
 1.	`git submodule update --init --recursive`
 1.	Import whatever extra folders required for your build into `src/`
 
-1.	`dutils/setup.sh /path/to/config.json` (if you have one)
+1.	`dutils/setup.sh informa_express /path/to/config.json` (if you have one)
 1.	Follow the prompts
 
 Upon successful installation, three new scripts should be generated: `run.sh`, `shutdown.sh`, and `update.sh`.

@@ -50,10 +50,6 @@ _EOF
 			if [[ -z "$U_PATH" ]] || [[ -z "$S_PATH" ]]; then
 				continue
 			else
-				echo ""
-				echo "HI $U_PATH and $S_PATH"
-				echo ""
-				
 				resolve_git $1/$S_PATH $U_PATH
 				U_PATH=""
 				S_PATH=""
@@ -62,8 +58,8 @@ _EOF
 	fi
 }
 
-sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get update -y
+sudo apt-get upgrade -y
 
 git config --global user.name "informa"
 git config --global user.email "informa@j3m.info"

@@ -12,7 +12,7 @@ DEFAULT_PORTS = [22]
 
 def init_d(with_config):
 	from dutils.conf import DUtilsTransforms as transforms
-	print with_config
+	global API_PORT, MESSAGE_PORT, FRONTEND_PORT
 
 	conf_keys = [
 		DUtilsKeyDefaults['USER_PWD'],
@@ -109,8 +109,11 @@ def build_d(with_config):
 	if not res:
 		return False
 
+	global DEFAULT_PORTS
+	import operator
+
 	mapped_ports = [config[p] for p in ["API_PORT", "MESSAGE_PORT", "FRONTEND_PORT"]]
-	DEFAULT_PORTS += mapped_ports
+	DEFAULT_PORTS = operator.add(DEFAULT_PORTS, mapped_ports)
 
 	res, config = append_to_config({
 		'DEFAULT_PORTS' : " ".join([str(p) for p in DEFAULT_PORTS]),
